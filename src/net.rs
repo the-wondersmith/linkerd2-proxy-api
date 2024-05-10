@@ -1,4 +1,3 @@
-use std::convert::{TryFrom, TryInto};
 use thiserror::Error;
 
 include!("gen/io.linkerd.proxy.net.rs");
