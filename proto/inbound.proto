@@ -18,218 +18,218 @@ import "net.proto";
 /// The unary `GetPort` endpoint is exposed as a convenience for clients to query policies for
 /// diagnostic purposes.
 service InboundServerPolicies {
-  /// Gets the inbound server policy for a given workload port.
-  rpc GetPort(PortSpec) returns (Server) {}
+    /// Gets the inbound server policy for a given workload port.
+    rpc GetPort (PortSpec) returns (Server) {}
 
-  /// Watches the inbound server policy for a given workload port.
-  rpc WatchPort(PortSpec) returns (stream Server) {}
+    /// Watches the inbound server policy for a given workload port.
+    rpc WatchPort (PortSpec) returns (stream Server) {}
 }
 
 message PortSpec {
-  // Identifies a proxy workload (e.g., pod name).
-  string workload = 1;
+    // Identifies a proxy workload (e.g., pod name).
+    string workload = 1;
 
-  // An inbound port on _workload_.
-  uint32 port = 2;
+    // An inbound port on _workload_.
+    uint32 port = 2;
 }
 
 message Server {
-  // If set, indicates how the proxy should proxy connections on the specified
-  // port.
-  ProxyProtocol protocol = 1;
+    // If set, indicates how the proxy should proxy connections on the specified
+    // port.
+    ProxyProtocol protocol = 1;
 
-  // Indicates the IP addresses on which the proxy may receive connections.
-  // Connections targetting other IP addresses will be dropped.
-  repeated io.linkerd.proxy.net.IPAddress server_ips = 2;
+    // Indicates the IP addresses on which the proxy may receive connections.
+    // Connections targeting other IP addresses will be dropped.
+    repeated io.linkerd.proxy.net.IPAddress server_ips = 2;
 
-  // Configures a proxy to allow connections from the specified clients.
-  //
-  // If unset, no connections are permitted.
-  repeated Authz authorizations = 3;
+    // Configures a proxy to allow connections from the specified clients.
+    //
+    // If unset, no connections are permitted.
+    repeated Authz authorizations = 3;
 
-  // Descriptive labels to be added to metrics, etc.
-  //
-  // A control plane SHOULD return the same keys in all policies. That is, we do
-  // NOT want to return arbitrary pod labels in this field.
-  map<string, string> labels = 4;
+    // Descriptive labels to be added to metrics, etc.
+    //
+    // A control plane SHOULD return the same keys in all policies. That is, we do
+    // NOT want to return arbitrary pod labels in this field.
+    map<string, string> labels = 4;
 }
 
 message ProxyProtocol {
-  oneof kind {
-    Detect detect = 1;
-    Opaque opaque = 2;
-    Tls tls = 3;
-    Http1 http1 = 4;
-    Http2 http2 = 5;
-    Grpc grpc = 6;
-  }
+    oneof kind {
+        Detect detect = 1;
+        Opaque opaque = 2;
+        Tls tls = 3;
+        Http1 http1 = 4;
+        Http2 http2 = 5;
+        Grpc grpc = 6;
+    }
 
-  message Detect {
-    google.protobuf.Duration timeout = 1;
+    message Detect {
+        google.protobuf.Duration timeout = 1;
 
-    // If the protocol detected as HTTP, a list of HTTP routes that should be
-    // matched.
-    repeated HttpRoute http_routes = 3;
+        // If the protocol detected as HTTP, a list of HTTP routes that should be
+        // matched.
+        repeated HttpRoute http_routes = 3;
 
-    // Never implemented.
-    reserved 2;
-  }
+        // Never implemented.
+        reserved 2;
+    }
 
-  message Http1 {
-    repeated HttpRoute routes = 2;
+    message Http1 {
+        repeated HttpRoute routes = 2;
 
-    // Never implemented.
-    reserved 1;
-  }
+        // Never implemented.
+        reserved 1;
+    }
 
-  message Http2 {
-    repeated HttpRoute routes = 2;
+    message Http2 {
+        repeated HttpRoute routes = 2;
 
-    // Never implemented.
-    reserved 1;
-  }
+        // Never implemented.
+        reserved 1;
+    }
 
-  message Grpc {
-    repeated GrpcRoute routes = 2;
+    message Grpc {
+        repeated GrpcRoute routes = 2;
 
-    // Never implemented.
-    reserved 1;
-  }
+        // Never implemented.
+        reserved 1;
+    }
 
-  message Opaque {
-    // TODO: opaque TLS settings (versions, algorithms, SNI)
-  }
+    message Opaque {
+        // TODO: opaque TLS settings (versions, algorithms, SNI)
+    }
 
-  message Tls {}
+    message Tls {}
 }
 
 message Authz {
-  // Limits this authorization to client addresses in the provided networks.
-  //
-  // Must have at least one network, otherwise the authorization must be
-  // ignored. An authorization matches all clients by including an explicit
-  // match on, i.e., `[0.0.0.0/0, 0::/0]``.
-  repeated Network networks = 1;
+    // Limits this authorization to client addresses in the provided networks.
+    //
+    // Must have at least one network, otherwise the authorization must be
+    // ignored. An authorization matches all clients by including an explicit
+    // match on, i.e., `[0.0.0.0/0, 0::/0]``.
+    repeated Network networks = 1;
 
-  // Must be set.
-  Authn authentication = 2;
+    // Must be set.
+    Authn authentication = 2;
 
-  // Descriptive labels to be added to metrics, etc.
-  //
-  // A control plane SHOULD return the same keys in all authorizations. That is,
-  // we do NOT want to return arbitrary pod labels in this field.
-  //
-  // `labels` should be considered deprecated. `metadata` is preferred. However,
-  // controllers should continue to set `labels` for compatibility with older
-  // proxies.
-  map<string, string> labels = 3;
+    // Descriptive labels to be added to metrics, etc.
+    //
+    // A control plane SHOULD return the same keys in all authorizations. That is,
+    // we do NOT want to return arbitrary pod labels in this field.
+    //
+    // `labels` should be considered deprecated. `metadata` is preferred. However,
+    // controllers should continue to set `labels` for compatibility with older
+    // proxies.
+    map<string, string> labels = 3;
 
-  // If set, describes an Authorization configuration. Replaces the free-from
-  // `labels` field.
-  io.linkerd.proxy.meta.Metadata metadata = 4;
+    // If set, describes an Authorization configuration. Replaces the free-from
+    // `labels` field.
+    io.linkerd.proxy.meta.Metadata metadata = 4;
 }
 
 // Describes a network of authorized clients.
 message Network {
-  io.linkerd.proxy.net.IPNetwork net = 1;
-  repeated io.linkerd.proxy.net.IPNetwork except = 2;
+    io.linkerd.proxy.net.IPNetwork net = 1;
+    repeated io.linkerd.proxy.net.IPNetwork except = 2;
 }
 
 message Authn {
-  oneof permit {
-    PermitUnauthenticated unauthenticated = 1;
+    oneof permit {
+        PermitUnauthenticated unauthenticated = 1;
 
-    // If set, requires that the connection is transported over mesh TLS.
-    PermitMeshTLS meshTLS = 2;
-  }
-
-  // TODO(ver) identify authentication resources?
-  // io.linkerd.proxy.meta.Metadata metadata = 3;
-
-  message PermitUnauthenticated {}
-
-  message PermitMeshTLS {
-    oneof clients {
-      // Indicates that client identities are not required.
-      PermitUnauthenticated unauthenticated = 1;
-
-      // Indicates that mutually-authenticated connections are permitted from
-      // clients with matching identities.
-      PermitClientIdentities identities = 2;
+        // If set, requires that the connection is transported over mesh TLS.
+        PermitMeshTLS meshTLS = 2;
     }
 
-    message PermitClientIdentities {
-      // A list of literal identities.
-      repeated Identity identities = 1;
+    // TODO(ver) identify authentication resources?
+    // io.linkerd.proxy.meta.Metadata metadata = 3;
 
-      // A list of identity suffixes.
-      //
-      // If this contains an empty suffix, all identities are matched.
-      repeated IdentitySuffix suffixes = 2;
+    message PermitUnauthenticated {}
+
+    message PermitMeshTLS {
+        oneof clients {
+            // Indicates that client identities are not required.
+            PermitUnauthenticated unauthenticated = 1;
+
+            // Indicates that mutually-authenticated connections are permitted from
+            // clients with matching identities.
+            PermitClientIdentities identities = 2;
+        }
+
+        message PermitClientIdentities {
+            // A list of literal identities.
+            repeated Identity identities = 1;
+
+            // A list of identity suffixes.
+            //
+            // If this contains an empty suffix, all identities are matched.
+            repeated IdentitySuffix suffixes = 2;
+        }
     }
-  }
 }
 
-message Identity { string name = 1; }
+message Identity {string name = 1;}
 
 // Encodes a DNS-like name suffix as sequence of parts.
 //
 // An empty list is equivalent to `.` (matching all names); the list `["foo",
 // "bar"]` is equivalent to "foo.bar." (matching `*.foo.bar`), etc.
-message IdentitySuffix { repeated string parts = 1; }
+message IdentitySuffix {repeated string parts = 1;}
 
 // Inbound-specific HTTP route configuration (based on the
 // [Gateway API](https://gateway-api.sigs.k8s.io/v1alpha2/references/spec/#gateway.networking.k8s.io/v1alpha2.HTTPRoute)).
 message HttpRoute {
-  io.linkerd.proxy.meta.Metadata metadata = 1;
+    io.linkerd.proxy.meta.Metadata metadata = 1;
 
-  // If empty, the host value is ignored.
-  repeated io.linkerd.proxy.http_route.HostMatch hosts = 2;
+    // If empty, the host value is ignored.
+    repeated io.linkerd.proxy.http_route.HostMatch hosts = 2;
 
-  // Extends the list of authorizations on the `Server` with authorizations
-  // specific to this route.
-  repeated Authz authorizations = 3;
+    // Extends the list of authorizations on the `Server` with authorizations
+    // specific to this route.
+    repeated Authz authorizations = 3;
 
-  // Must have at least one rule.
-  repeated Rule rules = 4;
+    // Must have at least one rule.
+    repeated Rule rules = 4;
 
-  message Rule {
-    repeated io.linkerd.proxy.http_route.HttpRouteMatch matches = 1;
-    repeated Filter filters = 2;
-  }
-
-  message Filter {
-    oneof kind {
-      io.linkerd.proxy.http_route.HttpFailureInjector failure_injector = 1;
-      io.linkerd.proxy.http_route.RequestHeaderModifier request_header_modifier = 2;
-      io.linkerd.proxy.http_route.RequestRedirect redirect = 3;
+    message Rule {
+        repeated io.linkerd.proxy.http_route.HttpRouteMatch matches = 1;
+        repeated Filter filters = 2;
     }
-  }
+
+    message Filter {
+        oneof kind {
+            io.linkerd.proxy.http_route.HttpFailureInjector failure_injector = 1;
+            io.linkerd.proxy.http_route.RequestHeaderModifier request_header_modifier = 2;
+            io.linkerd.proxy.http_route.RequestRedirect redirect = 3;
+        }
+    }
 }
 
 // Inbound-specific gRPC route configuration.
 message GrpcRoute {
-  io.linkerd.proxy.meta.Metadata metadata = 1;
+    io.linkerd.proxy.meta.Metadata metadata = 1;
 
-  // If empty, the host value is ignored.
-  repeated io.linkerd.proxy.http_route.HostMatch hosts = 2;
+    // If empty, the host value is ignored.
+    repeated io.linkerd.proxy.http_route.HostMatch hosts = 2;
 
-  // The server MUST return at least one authorization, otherwise all requests
-  // to this route will fail with an unauthorized response.
-  repeated Authz authorizations = 3;
+    // The server MUST return at least one authorization, otherwise all requests
+    // to this route will fail with an unauthorized response.
+    repeated Authz authorizations = 3;
 
-  // Must have at least one rule.
-  repeated Rule rules = 4;
+    // Must have at least one rule.
+    repeated Rule rules = 4;
 
-  message Rule {
-    repeated io.linkerd.proxy.grpc_route.GrpcRouteMatch matches = 1;
-    repeated Filter filters = 2;
-  }
-
-  message Filter {
-    oneof kind {
-      io.linkerd.proxy.grpc_route.GrpcFailureInjector failure_injector = 1;
-      io.linkerd.proxy.http_route.RequestHeaderModifier request_header_modifier = 2;
+    message Rule {
+        repeated io.linkerd.proxy.grpc_route.GrpcRouteMatch matches = 1;
+        repeated Filter filters = 2;
     }
-  }
+
+    message Filter {
+        oneof kind {
+            io.linkerd.proxy.grpc_route.GrpcFailureInjector failure_injector = 1;
+            io.linkerd.proxy.http_route.RequestHeaderModifier request_header_modifier = 2;
+        }
+    }
 }

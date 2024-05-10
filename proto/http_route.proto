@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package io.linkerd.proxy.http_route;
+
 option go_package = "github.com/linkerd/linkerd2-proxy-api/go/http_route";
 
 import "http_types.proto";
@@ -16,55 +17,55 @@ message HostMatch {
     }
 
     // A match like `*.example.com` is encoded as [com, example].
-    message Suffix { repeated string reverse_labels = 1; }
+    message Suffix {repeated string reverse_labels = 1;}
 }
 
 // Describes a set of matches, ALL of which must apply.
 message HttpRouteMatch {
-  // Matches requests by path.
-  PathMatch path = 1;
+    // Matches requests by path.
+    PathMatch path = 1;
 
-  // A set of header value matches that must be satisified. This match is not
-  // comprehensive, so requests may include headers that are not covered by this
-  // match.
-  repeated HeaderMatch headers = 2;
+    // A set of header value matches that must be satisfied. This match is not
+    // comprehensive, so requests may include headers that are not covered by this
+    // match.
+    repeated HeaderMatch headers = 2;
 
-  // A set of query parmaeter value matches that must be satisified. This match
-  // is not comprehensive, so requests may include query parameters that are not
-  // covered by this match.
-  repeated QueryParamMatch query_params = 3;
+    // A set of query parameter value matches that must be satisfied. This match
+    // is not comprehensive, so requests may include query parameters that are not
+    // covered by this match.
+    repeated QueryParamMatch query_params = 3;
 
-  // If specified, restricts the match to a single HTTP method.
-  io.linkerd.proxy.http_types.HttpMethod method  = 4;
+    // If specified, restricts the match to a single HTTP method.
+    io.linkerd.proxy.http_types.HttpMethod method = 4;
 }
 
 // Describes how to match a path.
 message PathMatch {
-  oneof kind {
-    string exact = 1;
-    string prefix = 2;
-    string regex = 3;
-  }
+    oneof kind {
+        string exact = 1;
+        string prefix = 2;
+        string regex = 3;
+    }
 }
 
 // Describes how to match a header by name and value.
 message HeaderMatch {
-  string name = 1;
+    string name = 1;
 
-  oneof value {
-    bytes exact = 2;
-    string regex = 3;
-  }
+    oneof value {
+        bytes exact = 2;
+        string regex = 3;
+    }
 }
 
 // Describes how to match a query parameter by name and value.
 message QueryParamMatch {
-  string name = 1;
+    string name = 1;
 
-  oneof value {
-    string exact = 2;
-    string regex = 3;
-  }
+    oneof value {
+        string exact = 2;
+        string regex = 3;
+    }
 }
 
 // Configures a route to modify a request's headers.
@@ -134,8 +135,8 @@ message PathModifier {
 
         // Indicates that the path prefix should be replaced with the given
         // value. When used, the route MUST match the request with PathMatch
-        // prefix match. Server implementations SHOULD prevent the useof prefix
-        // modifiers on routes that do use a PathMatch prefix match. Proxyies
+        // prefix match. Server implementations SHOULD prevent the use of prefix
+        // modifiers on routes that do use a PathMatch prefix match. Proxies
         // MUST not process requests for routes where this condition is not
         // satisfied.
         string prefix = 2;
@@ -144,23 +145,23 @@ message PathModifier {
 
 // Configures a route to respond with a fixed response.
 message HttpFailureInjector {
-  // The status code to use in the HTTP response. Must be specified.
-  uint32 status = 1;
+    // The status code to use in the HTTP response. Must be specified.
+    uint32 status = 1;
 
-  // An error message to log and include in the `l5d-proxy-err` header.
-  string message = 2;
+    // An error message to log and include in the `l5d-proxy-err` header.
+    string message = 2;
 
-  // If specified, the rate of requests that should be failed. If not specified,
-  // ALL requests are failed.
-  Ratio ratio = 3;
+    // If specified, the rate of requests that should be failed. If not specified,
+    // ALL requests are failed.
+    Ratio ratio = 3;
 }
 
-// A ratio (i.e., of requests) to which an filter should be applied.
+// A ratio (i.e., of requests) to which a filter should be applied.
 //
 // Represents fractional values on [0, 1].
 message Ratio {
-  uint32 numerator = 1;
+    uint32 numerator = 1;
 
-  // MUST not be zero.
-  uint32 denominator = 2;
+    // MUST not be zero.
+    uint32 denominator = 2;
 }
