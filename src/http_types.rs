@@ -1,8 +1,4 @@
-use std::{
-    borrow::Cow,
-    convert::{TryFrom, TryInto},
-    sync::Arc,
-};
+use std::{borrow::Cow, sync::Arc};
 use thiserror::Error;
 
 include!("gen/io.linkerd.proxy.http_types.rs");
