@@ -18,6 +18,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Generate rust bindings.
     let out_dir = PathBuf::from("src").join("gen");
     if let Err(e) = tonic_build::configure()
+        .enum_attribute(
+            ".io.linkerd.proxy.outbound.ProxyProtocol.kind",
+            r#"#[allow(clippy::large_enum_variant)]"#,
+        )
         .build_client(true)
         .build_server(true)
         .out_dir(out_dir)
