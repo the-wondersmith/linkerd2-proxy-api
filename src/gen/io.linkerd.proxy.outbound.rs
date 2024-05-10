@@ -58,6 +58,9 @@ pub mod proxy_protocol {
         /// HTTP/2 policy configuration.
         #[prost(message, optional, tag = "4")]
         pub http2: ::core::option::Option<Http2>,
+        /// GRPC policy configuration.
+        #[prost(message, optional, tag = "5")]
+        pub grpc: ::core::option::Option<Grpc>,
     }
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Message)]
@@ -92,6 +95,7 @@ pub mod proxy_protocol {
         #[prost(message, optional, tag = "2")]
         pub failure_accrual: ::core::option::Option<super::FailureAccrual>,
     }
+    #[allow(clippy::large_enum_variant)]
     #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Kind {
