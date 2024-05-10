@@ -21,7 +21,7 @@ traffic. This configuration includes:
 ### `identity`
 
 The identity API is used by proxies to obtain TLS certificates used for
-authenticed pod-to-pod communication.
+authenticated pod-to-pod communication.
 
 ### `inbound`
 
