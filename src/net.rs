@@ -210,7 +210,7 @@ impl TryFrom<TcpAddress> for std::net::SocketAddr {
 }
 
 #[cfg(feature = "arbitrary")]
-mod arbitary {
+mod arbitrary {
     use super::*;
     use quickcheck::*;
 

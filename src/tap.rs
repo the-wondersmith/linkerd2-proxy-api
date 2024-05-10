@@ -17,7 +17,7 @@ impl Eos {
 }
 
 #[cfg(feature = "arbitrary")]
-mod arbitary {
+mod arbitrary {
     use super::*;
     use crate::{http_types::*, net::*};
     use quickcheck::*;

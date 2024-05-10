@@ -157,7 +157,7 @@ impl TryFrom<Scheme> for http::uri::Scheme {
 }
 
 #[cfg(feature = "arbitrary")]
-mod arbitary {
+mod arbitrary {
     use super::*;
     use quickcheck::*;
 
